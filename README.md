@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Arlington Anglers Club
+
+A modern, responsive website for the Arlington Anglers Club - a local fishing club founded by a 6th grader in Arlington, Massachusetts.
+
+## Features
+
+- **Interactive Photo Gallery**: Lightbox experience with keyboard navigation (arrow keys & ESC)
+- **Responsive Design**: Mobile-first design with smooth animations
+- **Sections**:
+  - About Us - Club mission and values
+  - Events - Upcoming fishing events
+  - Photo Gallery - Club photos with lightbox viewer
+  - Product Reviews - YouTube video section (placeholder ready)
+  - Fishing Reports - Latest catch reports
+- **Smooth Navigation**: Fixed header with section highlighting
+- **Maroon Theme**: Custom color scheme matching club branding
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **UI Components**: Custom components with shadcn/ui
+- **Deployment**: Vercel
 
 ## Getting Started
 
-First, run the development server:
+### Development Server
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the site.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/
+  page.tsx          # Main homepage with all sections
+public/
+  IMG_*.jpg         # Gallery photos
+components/
+  ui/               # Reusable UI components
+```
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
+The site is deployed on Vercel with automatic deployments from the GitHub repository.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**GitHub**: [arlington-anglers-club](https://github.com/tylerhathaway09/arlington-anglers-club)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Any push to the `main` branch automatically deploys to production.
 
-## Deploy on Vercel
+## Adding Content
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Adding Photos to Gallery
+1. Add images to the `public/` folder
+2. Update the `galleryPhotos` array in `app/page.tsx`
+3. Images will automatically appear in the lightbox gallery
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Adding a YouTube Video
+Replace the placeholder in the Product Reviews section with:
+```jsx
+<iframe
+  width="100%"
+  height="100%"
+  src="https://www.youtube.com/embed/VIDEO_ID"
+  className="rounded-3xl"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+/>
+```
+
+### Updating Events
+Modify the events section in `app/page.tsx` to add or change upcoming events.
+
+## License
+
+All rights reserved - Arlington Anglers Club
