@@ -4,12 +4,20 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Mail, Trophy, Calendar, Fish, Menu } from 'lucide-react';
+import { Mail, Calendar, Fish, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeId, setActiveId] = useState('about');
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  const galleryPhotos = [
+    { src: '/IMG_4784.jpg', alt: 'Arlington Anglers Club Photo 1' },
+    { src: '/IMG_4786.jpg', alt: 'Arlington Anglers Club Photo 2' },
+    { src: '/IMG_4789.jpg', alt: 'Arlington Anglers Club Photo 3' },
+  ];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -19,7 +27,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const sectionIds = ['about', 'events', 'gallery', 'leaderboard', 'reviews', 'reports', 'join'];
+    const sectionIds = ['about', 'events', 'gallery', 'reviews', 'reports'];
     const sections = sectionIds.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => el !== null);
 
     const observer = new IntersectionObserver(
@@ -34,6 +42,30 @@ export default function Home() {
     sections.forEach((sec) => observer.observe(sec));
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!lightboxOpen) return;
+      if (e.key === 'Escape') setLightboxOpen(false);
+      if (e.key === 'ArrowLeft') navigateLightbox('prev');
+      if (e.key === 'ArrowRight') navigateLightbox('next');
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxOpen, selectedImageIndex]);
+
+  const openLightbox = (index: number) => {
+    setSelectedImageIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const navigateLightbox = (direction: 'prev' | 'next') => {
+    if (direction === 'prev') {
+      setSelectedImageIndex((prev) => (prev === 0 ? galleryPhotos.length - 1 : prev - 1));
+    } else {
+      setSelectedImageIndex((prev) => (prev === galleryPhotos.length - 1 ? 0 : prev + 1));
+    }
+  };
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
@@ -52,10 +84,8 @@ export default function Home() {
     { name: 'About', href: '#about', id: 'about' },
     { name: 'Events', href: '#events', id: 'events' },
     { name: 'Gallery', href: '#gallery', id: 'gallery' },
-    { name: 'Leaderboard', href: '#leaderboard', id: 'leaderboard' },
     { name: 'Reviews', href: '#reviews', id: 'reviews' },
     { name: 'Reports', href: '#reports', id: 'reports' },
-    { name: 'Join', href: '#join', id: 'join' },
   ];
 
   return (
@@ -131,16 +161,6 @@ export default function Home() {
             Arlington Anglers Club
           </h1>
         </motion.div>
-        <motion.div
-          className="mt-6 z-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <Button size="lg" className="bg-[#800000] hover:bg-[#990000] rounded-3xl shadow-xl text-lg px-8 py-3">
-            Join Now
-          </Button>
-        </motion.div>
       </section>
 
       {/* About Us */}
@@ -177,54 +197,34 @@ export default function Home() {
       {/* Upcoming Events */}
       <section id="events" className="scroll-mt-28 md:scroll-mt-32 py-16 bg-gray-100 text-center rounded-3xl mx-4 mt-8 shadow-md">
         <h2 className="text-3xl font-bold text-[#800000] mb-10">Upcoming Events</h2>
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {[
-            { title: 'Spring Bass Tournament', date: 'April 20, 2026' },
-            { title: 'Family Fishing Derby', date: 'June 10, 2026' },
-            { title: 'Fall Catch & Release Challenge', date: 'September 15, 2026' },
-          ].map((event, i) => (
-            <Card key={i} className="rounded-3xl shadow-lg hover:shadow-xl transition-all">
-              <CardContent className="p-6">
-                <Calendar className="mx-auto text-[#800000] w-10 h-10 mb-4" />
-                <h3 className="text-xl font-semibold">{event.title}</h3>
-                <p className="text-gray-600">{event.date}</p>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="flex justify-center max-w-5xl mx-auto">
+          <Card className="rounded-3xl shadow-lg hover:shadow-xl transition-all w-full max-w-md">
+            <CardContent className="p-6">
+              <Calendar className="mx-auto text-[#800000] w-10 h-10 mb-4" />
+              <h3 className="text-xl font-semibold">TBD</h3>
+              <p className="text-gray-600">Spring 2026</p>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
       {/* Photo Gallery */}
       <section id="gallery" className="scroll-mt-28 md:scroll-mt-32 py-16 bg-white text-center rounded-3xl mx-4 mt-8 shadow-md">
         <h2 className="text-3xl font-bold text-[#800000] mb-10">Photo Gallery</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-6xl mx-auto">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-            <motion.img
-              key={n}
-              src={`https://source.unsplash.com/400x400/?fishing,angler,fish&sig=${n}`}
-              alt="Fishing"
-              className="rounded-3xl shadow-md hover:scale-105 transition-transform"
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Leaderboard */}
-      <section id="leaderboard" className="scroll-mt-28 md:scroll-mt-32 py-16 bg-gray-100 text-center rounded-3xl mx-4 mt-8 shadow-md">
-        <h2 className="text-3xl font-bold text-[#800000] mb-10">Top Anglers</h2>
-        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          {[
-            { name: 'John Fisher', fish: '8.6 lb Largemouth Bass' },
-            { name: 'Sarah Hooks', fish: '7.2 lb Pike' },
-            { name: 'Tom Reeler', fish: '6.9 lb Trout' },
-          ].map((angler, i) => (
-            <Card key={i} className="rounded-3xl shadow-lg hover:shadow-xl transition-all">
-              <CardContent className="p-6">
-                <Trophy className="mx-auto text-[#800000] w-10 h-10 mb-4" />
-                <h3 className="text-xl font-semibold">{angler.name}</h3>
-                <p className="text-gray-600">{angler.fish}</p>
-              </CardContent>
-            </Card>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto px-4">
+          {galleryPhotos.map((photo, i) => (
+            <motion.div
+              key={i}
+              className="relative aspect-square overflow-hidden rounded-3xl shadow-md cursor-pointer"
+              whileHover={{ scale: 1.05 }}
+              onClick={() => openLightbox(i)}
+            >
+              <img
+                src={photo.src}
+                alt={photo.alt}
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
           ))}
         </div>
       </section>
@@ -233,12 +233,12 @@ export default function Home() {
       <section id="reviews" className="scroll-mt-28 md:scroll-mt-32 py-16 bg-gray-50 text-center rounded-3xl mx-4 mt-8 shadow-md">
         <h2 className="text-3xl font-bold text-[#800000] mb-10">Product Reviews</h2>
         <p className="max-w-3xl mx-auto text-gray-700 mb-8">Check out our latest gear reviews, tackle tests, and fishing equipment breakdowns. Watch and learn what works best on the water!</p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {[1, 2, 3].map((n) => (
-            <div key={n} className="aspect-video bg-gray-300 rounded-3xl flex items-center justify-center shadow-md">
-              <span className="text-gray-600">Video Placeholder {n}</span>
-            </div>
-          ))}
+        <div className="flex justify-center max-w-4xl mx-auto">
+          <div className="w-full aspect-video bg-gradient-to-br from-gray-200 to-gray-300 rounded-3xl flex flex-col items-center justify-center shadow-lg border-2 border-gray-400">
+            <div className="text-6xl mb-4">📺</div>
+            <span className="text-gray-700 text-xl font-semibold">YouTube Video Coming Soon</span>
+            <span className="text-gray-500 text-sm mt-2">Stay tuned for our latest product reviews!</span>
+          </div>
         </div>
       </section>
 
@@ -261,18 +261,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contact / Join Form */}
-      <section id="join" className="scroll-mt-28 md:scroll-mt-32 py-16 bg-gray-100 text-center rounded-3xl mx-4 mt-8 shadow-md">
-        <h2 className="text-3xl font-bold text-[#800000] mb-6">Join the Club</h2>
-        <p className="text-gray-700 mb-8">Interested in becoming a member or have questions? Drop us a line!</p>
-        <form className="max-w-md mx-auto bg-white rounded-3xl shadow-lg p-6 space-y-4">
-          <input type="text" placeholder="Your Name" className="w-full border border-gray-300 rounded-3xl p-3 focus:outline-none focus:ring-2 focus:ring-[#800000]" />
-          <input type="email" placeholder="Your Email" className="w-full border border-gray-300 rounded-3xl p-3 focus:outline-none focus:ring-2 focus:ring-[#800000]" />
-          <textarea placeholder="Your Message" rows={4} className="w-full border border-gray-300 rounded-3xl p-3 focus:outline-none focus:ring-2 focus:ring-[#800000]" />
-          <Button className="bg-[#800000] hover:bg-[#990000] rounded-3xl w-full shadow-lg hover:shadow-xl transition-all">Send Message</Button>
-        </form>
-      </section>
-
       {/* Footer */}
       <footer className="py-8 bg-[#800000] text-white text-center rounded-t-3xl rounded-b-3xl mt-8">
         <div className="flex justify-center space-x-4 mb-2">
@@ -281,6 +269,76 @@ export default function Home() {
         </div>
         <p>&copy; {new Date().getFullYear()} Arlington Anglers Club. All rights reserved.</p>
       </footer>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {lightboxOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+            onClick={() => setLightboxOpen(false)}
+          >
+            {/* Close Button */}
+            <button
+              className="absolute top-4 right-4 z-[110] p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              onClick={() => setLightboxOpen(false)}
+              aria-label="Close lightbox"
+            >
+              <X className="w-8 h-8 text-white" />
+            </button>
+
+            {/* Previous Button */}
+            <button
+              className="absolute left-4 z-[110] p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigateLightbox('prev');
+              }}
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="w-10 h-10 text-white" />
+            </button>
+
+            {/* Next Button */}
+            <button
+              className="absolute right-4 z-[110] p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigateLightbox('next');
+              }}
+              aria-label="Next image"
+            >
+              <ChevronRight className="w-10 h-10 text-white" />
+            </button>
+
+            {/* Image Container */}
+            <motion.div
+              key={selectedImageIndex}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={galleryPhotos[selectedImageIndex].src}
+                alt={galleryPhotos[selectedImageIndex].alt}
+                className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl"
+              />
+            </motion.div>
+
+            {/* Image Counter */}
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full">
+              <span className="text-white font-medium">
+                {selectedImageIndex + 1} / {galleryPhotos.length}
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
